@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>💬 Bytemonk Chat - AI Room</title>
+
+  <style>
+    /* ---- Global Layout ---- */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", "Segoe UI", sans-serif;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #4f46e5, #9333ea, #06b6d4);
+      background-size: 400% 400%;
+      animation: gradientFlow 10s ease infinite;
+    }
+
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ---- Chat Container ---- */
+    .chat-container {
+      width: 500px;
+      height: 500px;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ---- Header ---- */
+    h2 {
+      margin: 0;
+      background: linear-gradient(90deg, #6366f1, #a855f7, #3b82f6);
+      color: white;
+      text-align: center;
+      padding: 18px;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      animation: headerGlow 3s infinite alternate;
+    }
+
+    @keyframes headerGlow {
+      0% { box-shadow: 0 0 10px #8b5cf6; }
+      100% { box-shadow: 0 0 25px #60a5fa; }
+    }
+
+    /* ---- Chat Area ---- */
+    #chat {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .msg {
+      padding: 10px 14px;
+      border-radius: 12px;
+      display: inline-block;
+      max-width: 80%;
+      line-height: 1.4;
+      font-size: 15px;
+      opacity: 0;
+      animation: fadeIn 0.4s forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .self {
+      background: linear-gradient(135deg, #a7f3d0, #6ee7b7);
+      align-self: flex-end;
+      text-align: right;
+      color: #065f46;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .other {
+      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+      align-self: flex-start;
+      color: #1f2937;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .ai {
+      background: linear-gradient(135deg, #dbeafe, #c7d2fe);
+      border-left: 4px solid #6366f1;
+      font-style: italic;
+      color: #1e3a8a;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      align-self: flex-start;
+    }
+
+    .info {
+      text-align: center;
+      color: #f9fafb;
+      font-size: 14px;
+      margin: 10px 0;
+      opacity: 0.9;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ---- Input Area ---- */
+    #input {
+      display: flex;
+      align-items: center;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    input {
+      flex: 1;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.8);
+      transition: 0.3s;
+    }
+
+    input:focus {
+      background: #fff;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+    }
+
+    button {
+      padding: 12px 22px;
+      margin-left: 10px;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(135deg, #6366f1, #a855f7, #3b82f6);
+      color: white;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background-size: 200% auto;
+      box-shadow: 0 3px 10px rgba(99, 102, 241, 0.4);
+    }
+
+    button:hover {
+      background-position: right center;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.6);
+    }
+
+    /* ---- Scrollbar ---- */
+    #chat::-webkit-scrollbar {
+      width: 6px;
+    }
+    #chat::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="chat-container">
+    <h2>💬 Bytemonk Chat Room</h2>
+    <div id="chat"></div>
+
+    <div id="input">
+      <input id="msgInput" type="text" placeholder="Type a message or ask @Bytemonk..." />
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const user = "User-" + Math.floor(Math.random() * 1000);
+    const chatBox = document.getElementById("chat");
+    const msgInput = document.getElementById("msgInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    const ws = new WebSocket("ws://127.0.0.1:8000");
+
+    ws.addEventListener("open", () => {
+      addMessage("Welcome to Bytemonk AI — ask me anything with @Bytemonk 🤖", "info");
+    });
+
+    ws.addEventListener("message", (event) => {
+      const msg = JSON.parse(event.data);
+      let sender = "other";
+      if (msg.type === "ai") sender = "ai";
+      else if (msg.user === user) sender = "self";
+      else if (msg.type === "info") sender = "info";
+
+      addMessage(`${msg.user ? msg.user + ": " : ""}${msg.content}`, sender);
+    });
+
+    ws.addEventListener("close", () => addMessage("Disconnected ❌", "info"));
+    ws.addEventListener("error", (e) => addMessage("WebSocket error: " + e.message, "info"));
+
+    sendBtn.addEventListener("click", sendMessage);
+    msgInput.addEventListener("keydown", (e) => { if (e.key === "Enter") sendMessage(); });
+
+    function sendMessage() {
+      const text = msgInput.value.trim();
+      if (!text) return;
+      ws.send(JSON.stringify({ user, content: text }));
+      msgInput.value = "";
+    }
+
+    function addMessage(text, type) {
+      const div = document.createElement("div");
+
+      if (type === "info") {
+        div.classList.add("info");
+        div.textContent = text;
+      } else {
+        div.classList.add("msg", type);
+        div.textContent = text;
+      }
+
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
